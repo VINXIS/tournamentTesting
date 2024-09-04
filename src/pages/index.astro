@@ -1,0 +1,111 @@
+---
+import type { Match } from "./types";
+import singleElim from "./singleElim";
+import doubleElim from "./doubleElim";
+import customFormat from "./customFormat";
+
+let tournamentType: "single" | "double" | "custom" = "single";
+let teamCount: number = 8;
+let customMatches: Match[] = [];
+
+const { teams, rounds } =
+	tournamentType === "single"
+		? singleElim(teamCount)
+		: tournamentType === "double"
+		? doubleElim(teamCount)
+		: customFormat(customMatches);
+---
+<style>
+	.team_list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.bracket {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.round_matches {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: space-around;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	.match {
+		background-color: gray;
+		padding: 5px;
+		margin: 5px;
+		position: relative;
+	}
+
+	.match::after {
+		content: '';
+		position: absolute;
+		width: 10%;
+		height: 100%;
+		border-right: 1px solid black;
+		right: -10%;
+	}
+
+	.match::before {
+		content: '';
+		position: absolute;
+		width: 10%;
+		height: 100%;
+		border-top: 1px solid black;
+		top: 50%;
+		left: -10%;
+	}
+
+	.match:nth-child(even)::after {
+		border-bottom: 1px solid black;
+		bottom: 50%;
+	}
+
+	.match:nth-child(odd)::after {
+		border-top: 1px solid black;
+		top: 50%;
+	}
+
+	.round:last-child .match::after {
+		display: none;
+	}
+
+	.round:first-child .match::before {
+		display: none;
+	}
+</style>
+
+<h1>Settings</h1>
+<div>
+	<p>
+		Tournament Type:
+	</p>
+</div>
+
+<h1>Teams</h1>
+<div class="team_list">
+	{teams.map((team) => (
+		<div>Team {team}</div>
+	))}
+</div>
+<h1>Matches</h1>
+<div class="bracket">
+	{rounds.map((round) => (
+		<div class="round">
+			<h2>Round {round.round}</h2>
+			<div class="round_matches">
+				{round.matches.map((match) => (
+					<div class="match">
+						Team {match.team1} vs. Team {match.team2}
+					</div>
+				))}
+			</div>
+		</div>
+	))}
+</div>
